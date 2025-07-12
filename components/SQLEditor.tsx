@@ -92,6 +92,85 @@ export const SQLEditor: React.FC<SQLEditorProps> = ({ challenge, onComplete }) =
       };
     }
 
+    // Challenge-specific data validation
+    if (challenge.id === 'challenge-1') {
+      // Employee Salary Analysis validation
+      const invalidRows = result.data.filter((row: any) => {
+        return row.department !== 'Engineering' || 
+               row.salary <= 100000 || 
+               new Date(row.hire_date) <= new Date('2021-12-31');
+      });
+      
+      if (invalidRows.length > 0) {
+        return {
+          success: false,
+          message: `Your query returned ${invalidRows.length} rows that don't meet the criteria. All results must be Engineering employees with salary > $100,000 hired after 2021.`,
+          status: 'error'
+        };
+      }
+      
+      // Check if we have the expected results
+      const expectedEmployees = [1, 2, 4, 9]; // John Doe, Jane Smith, Alice Williams, Grace Anderson
+      const returnedIds = result.data.map((row: any) => row.employee_id).sort();
+      const expectedIds = expectedEmployees.sort();
+      
+      if (JSON.stringify(returnedIds) !== JSON.stringify(expectedIds)) {
+        return {
+          success: false,
+          message: `Your query should return exactly 4 employees: John Doe, Jane Smith, Alice Williams, and Grace Anderson. Check your WHERE conditions.`,
+          status: 'error'
+        };
+      }
+    }
+
+    // Challenge-specific data validation for other challenges
+    if (challenge.id === 'challenge-2') {
+      // Product Category Performance validation
+      const categories = result.data.map((row: any) => row.category);
+      const uniqueCategories = [...new Set(categories)];
+      
+      if (uniqueCategories.length < 3) {
+        return {
+          success: false,
+          message: 'Your query should return results for all product categories (Electronics, Furniture, Stationery).',
+          status: 'error'
+        };
+      }
+      
+      // Check if results are ordered by total_revenue descending
+      for (let i = 0; i < result.data.length - 1; i++) {
+        if (result.data[i].total_revenue < result.data[i + 1].total_revenue) {
+          return {
+            success: false,
+            message: 'Results should be ordered by total_revenue in descending order.',
+            status: 'error'
+          };
+        }
+      }
+    }
+
+    if (challenge.id === 'challenge-4') {
+      // Top Performing Products validation
+      if (result.data.length !== 3) {
+        return {
+          success: false,
+          message: 'Your query should return exactly 3 products (top 3 by quantity sold).',
+          status: 'error'
+        };
+      }
+      
+      // Check if results are ordered by total_quantity descending
+      for (let i = 0; i < result.data.length - 1; i++) {
+        if (result.data[i].total_quantity < result.data[i + 1].total_quantity) {
+          return {
+            success: false,
+            message: 'Results should be ordered by total_quantity in descending order.',
+            status: 'error'
+          };
+        }
+      }
+    }
+
     // Basic validation passed
     return {
       success: true,
