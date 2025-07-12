@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Briefcase, Home, Trophy, User, Menu } from 'lucide-react';
+import { Briefcase, Home, Trophy, User, Menu, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const Header: React.FC = () => {
@@ -34,6 +34,10 @@ export const Header: React.FC = () => {
               <Trophy className="h-5 w-5" />
               <span>Leaderboard</span>
             </Link>
+            <Link href="/billing" className="flex items-center space-x-2 font-semibold text-primary-700 hover:text-primary-900 transition-colors px-3 py-2 rounded-xl hover:bg-primary-100/60 focus:outline-none focus:ring-2 focus:ring-primary-300">
+              <CreditCard className="h-5 w-5" />
+              <span>Pricing</span>
+            </Link>
             <Link href="/profile" className="flex items-center space-x-2 font-semibold text-primary-700 hover:text-primary-900 transition-colors px-3 py-2 rounded-xl hover:bg-primary-100/60 focus:outline-none focus:ring-2 focus:ring-primary-300">
               <User className="h-5 w-5" />
               <span>Profile</span>
@@ -55,6 +59,7 @@ export const Header: React.FC = () => {
             <Link href="/" className="block px-4 py-3 rounded-xl font-semibold text-primary-700 hover:bg-primary-100/60 transition-colors">Home</Link>
             <Link href="/simulations" className="block px-4 py-3 rounded-xl font-semibold text-primary-700 hover:bg-primary-100/60 transition-colors">Simulations</Link>
             <Link href="/leaderboard" className="block px-4 py-3 rounded-xl font-semibold text-primary-700 hover:bg-primary-100/60 transition-colors">Leaderboard</Link>
+            <Link href="/billing" className="block px-4 py-3 rounded-xl font-semibold text-primary-700 hover:bg-primary-100/60 transition-colors">Pricing</Link>
             <Link href="/profile" className="block px-4 py-3 rounded-xl font-semibold text-primary-700 hover:bg-primary-100/60 transition-colors">Profile</Link>
           </div>
         )}

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Layout/Header";
 import { Footer } from "@/components/Layout/Footer";
+import { createClient } from '@/utils/supabase/server'
+import { FlowgladProvider } from '@flowglad/nextjs'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,11 +21,16 @@ export const metadata: Metadata = {
   description: "Practice real job skills through interactive simulations",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
+  const supabase = createClient()
+  const {
+    data: { user }
+  } = await (await supabase).auth.getUser()
+
   return (
     <html lang="en">
       <body
@@ -32,7 +39,9 @@ export default function RootLayout({
         <div className="min-h-screen flex flex-col bg-gray-50">
           <Header />
           <main className="flex-grow">
-            {children}
+            <FlowgladProvider loadBilling={!!user}>
+              {children}
+            </FlowgladProvider>
           </main>
           <Footer />
         </div>
