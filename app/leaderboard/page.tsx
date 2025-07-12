@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { Card } from '@/components/UI/Card';
 import { Badge } from '@/components/UI/Badge';
 

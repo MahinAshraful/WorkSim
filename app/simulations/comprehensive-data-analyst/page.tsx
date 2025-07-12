@@ -7,7 +7,7 @@ import { Button } from '@/components/UI/Button';
 import { Card } from '@/components/UI/Card';
 import { Badge } from '@/components/UI/Badge';
 import { DATA_ANALYST_PHASES, DATA_ANALYST_SIMULATION_CONFIG } from '@/data/dataAnalystChallenges';
-import { SimulationPhase, ChallengeType, Difficulty } from '@/types';
+import { ChallengeType, Difficulty } from '@/types';
 import { DataExplorationChallenge } from '@/components/DataExplorationChallenge';
 import { DataCleaningChallenge } from '@/components/DataCleaningChallenge';
 import { SQLChallenge } from '@/components/SQLChallenge';
@@ -306,7 +306,7 @@ export default function ComprehensiveDataAnalystSimulation() {
                   onComplete={handleChallengeComplete}
                 />
               )}
-              {currentChallenge.type === ChallengeType.SQL && (
+              {currentChallenge.type as string === ChallengeType.SQL && (
                 <SQLChallenge 
                   challenge={currentChallenge as any}
                   onComplete={handleChallengeComplete}
@@ -319,7 +319,7 @@ export default function ComprehensiveDataAnalystSimulation() {
                   </p>
                   <div className="mt-4 flex justify-center space-x-4">
                     <Button 
-                      variant="outline" 
+                      variant="secondary" 
                       onClick={() => handleChallengeComplete(false)}
                     >
                       Skip Challenge

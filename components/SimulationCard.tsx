@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Clock, Users, Lock, ArrowRight } from 'lucide-react';
+import { Clock, Lock, ArrowRight } from 'lucide-react';
 import { JobSimulation, Difficulty } from '@/types';
 import { Card } from './UI/Card';
 import { Button } from './UI/Button';

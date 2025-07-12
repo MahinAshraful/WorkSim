@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Play, RotateCcw, BookOpen, CheckCircle, XCircle, AlertCircle, Lightbulb } from 'lucide-react';
+import { Play, RotateCcw, CheckCircle, XCircle, AlertCircle, Lightbulb } from 'lucide-react';
 import { Button } from './UI/Button';
 import { Card } from './UI/Card';
 import { Badge } from './UI/Badge';

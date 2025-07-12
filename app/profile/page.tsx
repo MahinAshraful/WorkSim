@@ -1,9 +1,5 @@
 import React from 'react';
-import { User, Trophy, Clock, Target, BarChart, LogOut } from 'lucide-react';
-import { Card } from '@/components/UI/Card';
-import { Button } from '@/components/UI/Button';
-import { Badge } from '@/components/UI/Badge';
-import { logout } from '@/app/login/actions';
+
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { ProfileClient } from './ProfileClient';

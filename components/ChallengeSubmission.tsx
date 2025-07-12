@@ -33,6 +33,7 @@ export function ChallengeSubmission({
 }: ChallengeSubmissionProps) {
   const [submissions, setSubmissions] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  console.log(challengeId, challengeTitle, submissionItems, onSubmit, isSubmitting);
 
   const handleFileUpload = (itemId: string, files: FileList | null) => {
     if (!files || files.length === 0) {

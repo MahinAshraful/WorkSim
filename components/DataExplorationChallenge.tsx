@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Database, Search, BarChart3, TrendingUp, Users, DollarSign, Calendar } from 'lucide-react';
+import { Database, Search } from 'lucide-react';
 import { Button } from '@/components/UI/Button';
 import { Card } from '@/components/UI/Card';
 import { Badge } from '@/components/UI/Badge';

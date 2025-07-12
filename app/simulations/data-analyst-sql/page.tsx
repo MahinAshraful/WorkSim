@@ -8,7 +8,7 @@ import { Card } from '@/components/UI/Card';
 import { Badge } from '@/components/UI/Badge';
 import { SQLEditor } from '@/components/SQLEditor';
 import { SQL_CHALLENGES } from '@/data/sqlChallenges';
-import { SQLChallenge, Difficulty } from '@/types';
+import { Difficulty } from '@/types';
 
 export default function DataAnalystSQLSimulation() {
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
@@ -17,6 +17,7 @@ export default function DataAnalystSQLSimulation() {
   const [showInstructions, setShowInstructions] = useState(true);
   const [attempts, setAttempts] = useState<Record<string, number>>({});
 
+  console.log(attempts)
   const currentChallenge = SQL_CHALLENGES[currentChallengeIndex];
   const totalChallenges = SQL_CHALLENGES.length;
   const completedCount = completedChallenges.size;
@@ -29,6 +30,7 @@ export default function DataAnalystSQLSimulation() {
   }, [startTime]);
 
   const handleChallengeComplete = (success: boolean, query: string) => {
+    console.log(query)
     if (success) {
       const newCompleted = new Set(completedChallenges);
       newCompleted.add(currentChallenge.id);

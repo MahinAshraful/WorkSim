@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { Briefcase, Home, Trophy, User, Menu, CreditCard } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);

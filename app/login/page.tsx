@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { login, signup } from './actions';
 import { Card } from '@/components/UI/Card';
 import { Button } from '@/components/UI/Button';
-import { Briefcase, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Briefcase, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -21,8 +21,9 @@ export default function LoginPage() {
       } else {
         await login(formData);
       }
-    } catch (err) {
-      // setError('An error occurred. Please try again.'); // Suppress error display
+    } catch (err) {      console.error('Login error:', err);
+      setError('An error occurred. Please try again.');
+      // Optionally, you can handle specific error cases here
     } finally {
       setIsLoading(false);
     }

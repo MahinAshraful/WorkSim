@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, BarChart3, Code2, Palette, Target, Zap, Users } from 'lucide-react';
+import { ArrowRight, Target, Zap, Users } from 'lucide-react';
 import { Button } from '@/components/UI/Button';
 import { Card } from '@/components/UI/Card';
 import { SimulationCard } from '@/components/SimulationCard';

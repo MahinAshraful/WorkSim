@@ -269,7 +269,7 @@ export function DataCleaningChallenge({ challenge, onComplete }: DataCleaningCha
                         {getFixOptions(issue.type).map((fix, fixIndex) => (
                           <Button
                             key={fixIndex}
-                            variant={appliedFixes[issue.type] === fix.value ? 'default' : 'outline'}
+                            variant={appliedFixes[issue.type] === fix.value ? 'primary' : 'secondary'}
                             size="sm"
                             className="justify-start"
                             onClick={() => handleFixApply(issue.type, fix.value)}

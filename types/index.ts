@@ -95,7 +95,17 @@ export interface SimulationPhase {
   title: string;
   description: string;
   order: number;
-  challenges: BaseChallenge[];
+  challenges: (
+    | DataExplorationChallenge
+    | DataCleaningChallenge
+    | VisualizationChallenge
+    | StatisticalAnalysisChallenge
+    | BusinessIntelligenceChallenge
+    | ABTestingChallenge
+    | DashboardChallenge
+    | PresentationChallenge
+    | DataStorytellingChallenge
+  )[];
   estimatedTime: number;
   requiredToComplete: boolean;
 }

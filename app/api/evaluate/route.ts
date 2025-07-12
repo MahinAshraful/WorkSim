@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { evaluateSubmission, EvaluationCriteria } from '@/lib/ai-evaluation';
+import { evaluateSubmission } from '@/lib/ai-evaluation';
 
 export async function POST(request: NextRequest) {
   try {
