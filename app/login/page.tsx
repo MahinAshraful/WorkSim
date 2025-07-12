@@ -70,7 +70,7 @@ export default function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-primary-100 rounded-xl bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-colors font-sans text-primary-900 placeholder-primary-300"
+                  className="block w-full pl-10 pr-3 py-3 border border-primary-100 rounded-xl bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-colors font-sans text-primary-900 placeholder-primary-600"
                   placeholder="Enter your email"
                 />
               </div>
@@ -91,7 +91,7 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete={isSignUp ? 'new-password' : 'current-password'}
                   required
-                  className="block w-full pl-10 pr-12 py-3 border border-primary-100 rounded-xl bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-colors font-sans text-primary-900 placeholder-primary-300"
+                  className="block w-full pl-10 pr-12 py-3 border border-primary-100 rounded-xl bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-colors font-sans text-primary-900 placeholder-primary-600"
                   placeholder="Enter your password"
                 />
                 <button
