@@ -10,6 +10,7 @@
     "setup": "node scripts/setup-env.js"
   },
   "dependencies": {
+    "@flowglad/nextjs": "^0.10.17",
     "@google/generative-ai": "^0.24.1",
     "@monaco-editor/react": "^4.7.0",
     "@supabase/ssr": "^0.6.1",
