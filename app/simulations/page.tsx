@@ -26,8 +26,10 @@ export default function Simulations() {
   const difficulties = Object.values(Difficulty);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
+      {/* Animated morphing blob accent for grid area */}
+      <div className="absolute top-40 left-1/2 -translate-x-1/2 w-[600px] h-[350px] rounded-full bg-gradient-to-tr from-primary-300 via-primary-100 to-primary-500 opacity-30 blur-3xl animate-blobMorph z-0" />
+      <div className="mb-8 relative z-10">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Job Simulations</h1>
         <p className="text-lg text-gray-600">
           Choose from our library of professional simulations to practice real job skills

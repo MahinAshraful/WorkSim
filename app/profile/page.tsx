@@ -26,25 +26,28 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid lg:grid-cols-3 gap-8">
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 animate-fade-in">
+      {/* Animated accent blob in bottom right corner */}
+      <div className="absolute bottom-0 right-0 w-[350px] h-[220px] rounded-full bg-gradient-to-tr from-primary-200 via-primary-400 to-primary-700 opacity-25 blur-2xl animate-blobCorner z-0" />
+      {/* (SVG background removed for new animated visual) */}
+      <div className="grid lg:grid-cols-3 gap-10 relative z-10">
         {/* Profile Info */}
-        <div className="lg:col-span-1">
-          <Card className="p-6">
+        <div className="lg:col-span-1 space-y-6">
+          <Card className="p-8 rounded-2xl shadow-lg border border-primary-100 bg-white/95 animate-slide-up">
             <div className="text-center">
-              <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <User className="h-12 w-12 text-primary-600" />
+              <div className="w-28 h-28 bg-gradient-to-br from-primary-600 to-primary-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
+                <User className="h-14 w-14 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">{userData.name}</h1>
-              <p className="text-gray-600 mb-4">{userData.email}</p>
-              <p className="text-sm text-gray-500 mb-6">Member since {userData.joinDate}</p>
-              <div className="space-y-3">
-                <Button variant="primary" className="w-full">
+              <h1 className="text-3xl font-extrabold text-primary-900 mb-2 font-sans">{userData.name}</h1>
+              <p className="text-primary-700 mb-3 font-medium">{userData.email}</p>
+              <p className="text-sm text-primary-400 mb-8">Member since {userData.joinDate}</p>
+              <div className="space-y-4">
+                <Button variant="primary" className="w-full rounded-xl text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600">
                   Edit Profile
                 </Button>
                 <form action={logout}>
-                  <Button variant="secondary" className="w-full" type="submit">
-                    <LogOut className="h-4 w-4 mr-2" />
+                  <Button variant="secondary" className="w-full rounded-xl text-lg font-bold" type="submit">
+                    <LogOut className="h-5 w-5 mr-2" />
                     Logout
                   </Button>
                 </form>
@@ -52,11 +55,11 @@ export default function Profile() {
             </div>
           </Card>
 
-          <Card className="p-6 mt-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Skills</h3>
+          <Card className="p-6 rounded-2xl border border-primary-100 bg-white/95 animate-slide-up">
+            <h3 className="font-semibold text-primary-900 mb-4 text-lg font-sans">Skills</h3>
             <div className="flex flex-wrap gap-2">
               {userData.skills.map((skill) => (
-                <Badge key={skill} variant="default">
+                <Badge key={skill} variant="default" className="bg-primary-50 text-primary-700 font-semibold px-3 py-1 rounded-lg">
                   {skill}
                 </Badge>
               ))}
@@ -65,42 +68,42 @@ export default function Profile() {
         </div>
 
         {/* Stats and Activity */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-8">
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="p-4 text-center">
-              <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{userData.totalScore}</p>
-              <p className="text-sm text-gray-600">Total Score</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 animate-slide-up">
+            <Card className="p-6 text-center rounded-2xl border border-primary-100 bg-white/95">
+              <Trophy className="h-10 w-10 text-yellow-500 mx-auto mb-3" />
+              <p className="text-3xl font-extrabold text-primary-900 mb-1">{userData.totalScore}</p>
+              <p className="text-base text-primary-700 font-medium">Total Score</p>
             </Card>
-            <Card className="p-4 text-center">
-              <Target className="h-8 w-8 text-primary-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{userData.completedSimulations}</p>
-              <p className="text-sm text-gray-600">Completed</p>
+            <Card className="p-6 text-center rounded-2xl border border-primary-100 bg-white/95">
+              <Target className="h-10 w-10 text-primary-600 mx-auto mb-3" />
+              <p className="text-3xl font-extrabold text-primary-900 mb-1">{userData.completedSimulations}</p>
+              <p className="text-base text-primary-700 font-medium">Completed</p>
             </Card>
-            <Card className="p-4 text-center">
-              <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{userData.totalTimeSpent}m</p>
-              <p className="text-sm text-gray-600">Time Spent</p>
+            <Card className="p-6 text-center rounded-2xl border border-primary-100 bg-white/95">
+              <Clock className="h-10 w-10 text-green-600 mx-auto mb-3" />
+              <p className="text-3xl font-extrabold text-primary-900 mb-1">{userData.totalTimeSpent}m</p>
+              <p className="text-base text-primary-700 font-medium">Time Spent</p>
             </Card>
-            <Card className="p-4 text-center">
-              <BarChart className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{userData.averageScore}%</p>
-              <p className="text-sm text-gray-600">Avg Score</p>
+            <Card className="p-6 text-center rounded-2xl border border-primary-100 bg-white/95">
+              <BarChart className="h-10 w-10 text-purple-600 mx-auto mb-3" />
+              <p className="text-3xl font-extrabold text-primary-900 mb-1">{userData.averageScore}%</p>
+              <p className="text-base text-primary-700 font-medium">Avg Score</p>
             </Card>
           </div>
 
           {/* Recent Activity */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Recent Activity</h3>
-            <div className="space-y-4">
+          <Card className="p-8 rounded-2xl border border-primary-100 bg-white/95 animate-slide-up">
+            <h3 className="font-semibold text-primary-900 mb-6 text-lg font-sans">Recent Activity</h3>
+            <div className="space-y-5">
               {userData.recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
+                <div key={index} className="flex items-center justify-between py-4 border-b border-primary-100 last:border-0">
                   <div>
-                    <p className="font-medium text-gray-900">{activity.simulation}</p>
-                    <p className="text-sm text-gray-500">{activity.date}</p>
+                    <p className="font-semibold text-primary-900 mb-1">{activity.simulation}</p>
+                    <p className="text-sm text-primary-400">{activity.date}</p>
                   </div>
-                  <Badge variant="success" className="text-lg">
+                  <Badge variant="success" className="text-lg px-4 py-1 rounded-lg font-bold">
                     {activity.score}%
                   </Badge>
                 </div>
@@ -109,10 +112,10 @@ export default function Profile() {
           </Card>
 
           {/* Progress Chart Placeholder */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Progress Over Time</h3>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Chart visualization would go here</p>
+          <Card className="p-8 rounded-2xl border border-primary-100 bg-white/95 animate-slide-up">
+            <h3 className="font-semibold text-primary-900 mb-6 text-lg font-sans">Progress Over Time</h3>
+            <div className="h-64 bg-primary-50 rounded-xl flex items-center justify-center">
+              <p className="text-primary-400 font-medium">Chart visualization would go here</p>
             </div>
           </Card>
         </div>

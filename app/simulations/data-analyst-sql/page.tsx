@@ -193,50 +193,28 @@ export default function DataAnalystSQLSimulation() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in">
           {/* Challenge Progress */}
-          <Card>
+          <Card className="rounded-2xl shadow-lg border border-primary-100 bg-white/95">
             <div className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Challenges</h3>
+              <h3 className="font-semibold text-primary-900 mb-4 text-lg font-sans">Challenges</h3>
               <div className="space-y-3">
                 {SQL_CHALLENGES.map((challenge, index) => (
                   <div
                     key={challenge.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                      index === currentChallengeIndex
-                        ? 'border-primary-300 bg-primary-50'
+                    className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all font-medium text-base
+                      ${index === currentChallengeIndex
+                        ? 'border-primary-400 bg-primary-50 text-primary-900 shadow-sm'
                         : completedChallenges.has(challenge.id)
-                        ? 'border-green-300 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                        ? 'border-green-300 bg-green-50 text-green-800'
+                        : 'border-primary-100 bg-white hover:border-primary-200 hover:bg-primary-50 text-primary-700'}
+                    `}
                     onClick={() => setCurrentChallengeIndex(index)}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                        completedChallenges.has(challenge.id)
-                          ? 'bg-green-600 text-white'
-                          : index === currentChallengeIndex
-                          ? 'bg-primary-600 text-white'
-                          : 'bg-gray-200 text-gray-600'
-                      }`}>
-                        {completedChallenges.has(challenge.id) ? (
-                          <CheckCircle className="h-4 w-4" />
-                        ) : (
-                          index + 1
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{challenge.title}</p>
-                        <Badge variant={getDifficultyColor(challenge.difficulty) as any} className="text-xs">
-                          {challenge.difficulty}
-                        </Badge>
-                      </div>
-                    </div>
-                    {attempts[challenge.id] && (
-                      <span className="text-xs text-gray-500">
-                        {attempts[challenge.id]} attempt{attempts[challenge.id] > 1 ? 's' : ''}
-                      </span>
-                    )}
+                    <span className="truncate">{challenge.title}</span>
+                    <Badge variant={getDifficultyColor(challenge.difficulty)} className="ml-2">
+                      {challenge.difficulty}
+                    </Badge>
                   </div>
                 ))}
               </div>

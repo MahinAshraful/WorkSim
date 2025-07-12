@@ -14,8 +14,11 @@ export default function Leaderboard() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
+      {/* Animated accent blob in top left corner */}
+      <div className="absolute top-0 left-0 w-[320px] h-[180px] rounded-full bg-gradient-to-tr from-primary-300 via-primary-500 to-primary-700 opacity-20 blur-2xl animate-blobTopLeft z-0" />
+      {/* (SVG background removed for new animated visual) */}
+      <div className="text-center mb-12 relative z-10">
         <Trophy className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Leaderboard</h1>
         <p className="text-lg text-gray-600">
