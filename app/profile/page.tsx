@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { User, Trophy, Clock, Target, BarChart } from 'lucide-react';
+import { User, Trophy, Clock, Target, BarChart, LogOut } from 'lucide-react';
 import { Card } from '@/components/UI/Card';
 import { Button } from '@/components/UI/Button';
 import { Badge } from '@/components/UI/Badge';
+import { logout } from '@/app/login/actions';
 
 export default function Profile() {
   // Placeholder data
@@ -37,9 +38,17 @@ export default function Profile() {
               <h1 className="text-2xl font-bold text-gray-900 mb-2">{userData.name}</h1>
               <p className="text-gray-600 mb-4">{userData.email}</p>
               <p className="text-sm text-gray-500 mb-6">Member since {userData.joinDate}</p>
-              <Button variant="primary" className="w-full">
-                Edit Profile
-              </Button>
+              <div className="space-y-3">
+                <Button variant="primary" className="w-full">
+                  Edit Profile
+                </Button>
+                <form action={logout}>
+                  <Button variant="secondary" className="w-full" type="submit">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </form>
+              </div>
             </div>
           </Card>
 
