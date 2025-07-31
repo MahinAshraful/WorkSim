@@ -59,12 +59,12 @@ export const JOB_SIMULATIONS: JobSimulation[] = [
   {
     id: 'frontend-engineer',
     title: 'Frontend Engineer',
-    description: 'Build interactive UI components and solve frontend challenges',
+    description: 'Step into the role of a frontend engineer with realistic manager interactions, coding tasks, and automated feedback',
     category: JobCategory.ENGINEERING,
     difficulty: Difficulty.INTERMEDIATE,
     estimatedTime: 90,
-    skills: ['React', 'TypeScript', 'CSS'],
-    available: false,
+    skills: ['React', 'TypeScript', 'CSS', 'UI/UX', 'Component Design'],
+    available: true,
     icon: '💻',
   },
   {

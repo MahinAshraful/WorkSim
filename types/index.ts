@@ -105,6 +105,9 @@ export interface SimulationPhase {
     | DashboardChallenge
     | PresentationChallenge
     | DataStorytellingChallenge
+    | FrontendCodingChallenge
+    | UIComponentChallenge
+    | CodeReviewChallenge
   )[];
   estimatedTime: number;
   requiredToComplete: boolean;
@@ -131,7 +134,10 @@ export enum ChallengeType {
   AB_TESTING = 'A/B Testing',
   DASHBOARD = 'Dashboard',
   PRESENTATION = 'Presentation',
-  DATA_STORYTELLING = 'Data Storytelling'
+  DATA_STORYTELLING = 'Data Storytelling',
+  FRONTEND_CODING = 'Frontend Coding',
+  UI_COMPONENT = 'UI Component',
+  CODE_REVIEW = 'Code Review'
 }
 
 export interface DataExplorationChallenge extends BaseChallenge {
@@ -381,4 +387,133 @@ export interface DataPoint {
   value: number;
   context: string;
   significance: string;
+}
+
+// Frontend Engineering Challenge Types
+export interface FrontendCodingChallenge extends BaseChallenge {
+  type: ChallengeType.FRONTEND_CODING;
+  task: FrontendTask;
+  starterCode: CodeFile[];
+  requirements: string[];
+  managerPrompt: string;
+  teammateHints: string[];
+}
+
+export interface UIComponentChallenge extends BaseChallenge {
+  type: ChallengeType.UI_COMPONENT;
+  componentSpec: ComponentSpec;
+  designTokens: DesignTokens;
+  starterCode: CodeFile[];
+  requirements: string[];
+}
+
+export interface CodeReviewChallenge extends BaseChallenge {
+  type: ChallengeType.CODE_REVIEW;
+  codeToReview: string;
+  originalCode: string;
+  reviewCriteria: ReviewCriteria[];
+  expectedImprovements: string[];
+}
+
+// Supporting types for Frontend challenges
+export interface FrontendTask {
+  id: string;
+  title: string;
+  description: string;
+  userStory: string;
+  acceptanceCriteria: string[];
+  priority: 'low' | 'medium' | 'high';
+  managerPrompt: string;
+  starterCode: CodeFile[];
+}
+
+export interface CodeFile {
+  name: string;
+  path: string;
+  content: string;
+  language: 'typescript' | 'javascript' | 'css' | 'html' | 'jsx' | 'tsx';
+  editable: boolean;
+}
+
+export interface ComponentSpec {
+  name: string;
+  props: ComponentProp[];
+  variants: ComponentVariant[];
+  states: ComponentState[];
+  accessibility: AccessibilityRequirement[];
+}
+
+export interface ComponentProp {
+  name: string;
+  type: string;
+  required: boolean;
+  description: string;
+  defaultValue?: any;
+}
+
+export interface ComponentVariant {
+  name: string;
+  description: string;
+  props: Record<string, any>;
+}
+
+export interface ComponentState {
+  name: string;
+  description: string;
+  triggers: string[];
+}
+
+export interface AccessibilityRequirement {
+  id: string;
+  description: string;
+  wcagLevel: 'A' | 'AA' | 'AAA';
+  testMethod: string;
+}
+
+export interface DesignTokens {
+  colors: Record<string, string>;
+  typography: TypographyToken[];
+  spacing: Record<string, string>;
+  borders: Record<string, string>;
+  shadows: Record<string, string>;
+}
+
+export interface TypographyToken {
+  name: string;
+  fontSize: string;
+  fontWeight: string;
+  lineHeight: string;
+  fontFamily: string;
+}
+
+export interface ReviewCriteria {
+  id: string;
+  category: 'functionality' | 'performance' | 'accessibility' | 'maintainability' | 'security';
+  description: string;
+  weight: number;
+}
+
+// Chat bot message types
+export interface ChatMessage {
+  id: string;
+  role: 'manager' | 'teammate' | 'user';
+  content: string;
+  timestamp: Date;
+  type: 'text' | 'code' | 'file';
+  metadata?: Record<string, any>;
+}
+
+export interface ChatSession {
+  id: string;
+  type: 'manager' | 'teammate';
+  messages: ChatMessage[];
+  context: FrontendSimulationContext;
+}
+
+export interface FrontendSimulationContext {
+  currentTask?: FrontendTask;
+  completedTasks: string[];
+  codeFiles: CodeFile[];
+  progress: number;
+  hints: string[];
 }

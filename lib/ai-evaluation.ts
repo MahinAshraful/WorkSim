@@ -60,7 +60,21 @@ export async function evaluateSubmission(submissionData: SubmissionData): Promis
 function generateEvaluationPrompt(submissionData: SubmissionData): string {
   const { challengeId, challengeType, challengeDescription, expectedOutcomes, submissions } = submissionData;
   
-  let prompt = `You are an expert data analyst evaluating a submission for a data analyst challenge. 
+  let prompt = '';
+  
+  if (challengeType === 'Frontend Coding') {
+    prompt = `You are an expert frontend engineer evaluating a code submission for a frontend engineering challenge.
+
+CHALLENGE DETAILS:
+- Challenge ID: ${challengeId}
+- Challenge Type: ${challengeType}
+- Task Description: ${challengeDescription}
+- Requirements: ${expectedOutcomes.join(', ')}
+
+SUBMITTED WORK:
+`;
+  } else {
+    prompt = `You are an expert data analyst evaluating a submission for a data analyst challenge. 
 
 CHALLENGE DETAILS:
 - Challenge ID: ${challengeId}
@@ -70,6 +84,7 @@ CHALLENGE DETAILS:
 
 SUBMITTED WORK:
 `;
+  }
 
   // Add submission content based on type
   Object.entries(submissions).forEach(([key, value]) => {
@@ -80,7 +95,38 @@ SUBMITTED WORK:
     }
   });
 
-  prompt += `
+  if (challengeType === 'Frontend Coding') {
+    prompt += `
+
+EVALUATION CRITERIA:
+1. FUNCTIONALITY (0-100): Does the code meet the specified requirements? Does it work correctly?
+2. CODE QUALITY (0-100): Is the code clean, readable, and well-structured? Are React/TypeScript best practices followed?
+3. COMPLETENESS (0-100): Have all requirements and acceptance criteria been addressed?
+4. BEST PRACTICES (0-100): Does the code follow modern frontend development standards, accessibility guidelines, and proper component design?
+
+Please provide your evaluation in the following JSON format:
+{
+  "accuracy": [functionality score],
+  "completeness": [completeness score],
+  "methodology": [code quality score],
+  "communication": [best practices score],
+  "overall": [average of all scores],
+  "feedback": "[Detailed feedback explaining the evaluation, highlighting what was done well and areas for improvement]",
+  "suggestions": ["[Specific actionable suggestions for improving the code]"]
+}
+
+Focus on:
+- React component structure and props handling
+- TypeScript usage and type safety
+- CSS/styling approach and responsive design
+- Code organization and readability
+- Accessibility considerations
+- Performance implications
+- Whether the solution actually solves the stated problem
+
+Be constructive and educational in your feedback.`;
+  } else {
+    prompt += `
 
 EVALUATION CRITERIA:
 1. ACCURACY (0-100): Are the findings and conclusions correct? Are calculations accurate?
@@ -100,6 +146,7 @@ Please provide your evaluation in the following JSON format:
 }
 
 Be thorough but constructive in your evaluation. Focus on actionable feedback that would help improve the work.`;
+  }
 
   return prompt;
 }
@@ -269,6 +316,28 @@ export async function evaluatePresentation(
       'Presentation Content': presentation,
       'Key Findings': keyFindings,
       'Recommendations': recommendations
+    }
+  };
+  
+  return evaluateSubmission(submissionData);
+}
+
+export async function evaluateFrontendCode(
+  originalCode: string,
+  editedCode: string,
+  taskPrompt: string,
+  requirements: string[]
+): Promise<EvaluationCriteria> {
+  const submissionData: SubmissionData = {
+    challengeId: 'frontend-coding',
+    challengeType: 'Frontend Coding',
+    challengeDescription: taskPrompt,
+    expectedOutcomes: requirements,
+    submissions: {
+      'Task Prompt': taskPrompt,
+      'Requirements': requirements.join('\n'),
+      'Original Code': originalCode,
+      'Edited Code': editedCode
     }
   };
   
