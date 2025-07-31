@@ -29,20 +29,19 @@ export async function evaluateSubmission(submissionData: SubmissionData): Promis
       throw new Error('Google Gemini API key not configured');
     }
 
-    const response = await fetch('/api/evaluate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(submissionData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Evaluation request failed');
-    }
-
-    const data = await response.json();
-    return data.evaluation;
+    // Generate the evaluation prompt
+    const prompt = generateEvaluationPrompt(submissionData);
+    
+    // Call Gemini API directly
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    // Parse the evaluation response
+    return parseEvaluationResponse(text);
   } catch (error) {
     console.error('AI evaluation error:', error);
     return {
@@ -104,7 +103,7 @@ EVALUATION CRITERIA:
 3. COMPLETENESS (0-100): Have all requirements and acceptance criteria been addressed?
 4. BEST PRACTICES (0-100): Does the code follow modern frontend development standards, accessibility guidelines, and proper component design?
 
-Please provide your evaluation in the following JSON format:
+Please provide your evaluation in the following JSON format ONLY (no additional text before or after):
 {
   "accuracy": [functionality score],
   "completeness": [completeness score],
@@ -114,6 +113,8 @@ Please provide your evaluation in the following JSON format:
   "feedback": "[Detailed feedback explaining the evaluation, highlighting what was done well and areas for improvement]",
   "suggestions": ["[Specific actionable suggestions for improving the code]"]
 }
+
+IMPORTANT: Respond with ONLY the JSON object above. Do not include any additional text, explanations, or formatting outside the JSON structure.
 
 Focus on:
 - React component structure and props handling
@@ -153,20 +154,49 @@ Be thorough but constructive in your evaluation. Focus on actionable feedback th
 
 function parseEvaluationResponse(response: string): EvaluationCriteria {
   try {
-    // Try to extract JSON from the response
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      return {
-        accuracy: Math.min(100, Math.max(0, parsed.accuracy || 0)),
-        completeness: Math.min(100, Math.max(0, parsed.completeness || 0)),
-        methodology: Math.min(100, Math.max(0, parsed.methodology || 0)),
-        communication: Math.min(100, Math.max(0, parsed.communication || 0)),
-        overall: Math.min(100, Math.max(0, parsed.overall || 0)),
-        feedback: parsed.feedback || 'No feedback provided',
-        suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : []
-      };
+    // Clean the response to handle control characters and formatting issues
+    let cleanedResponse = response
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control characters
+      .replace(/\n/g, '\\n') // Escape newlines
+      .replace(/\r/g, '\\r') // Escape carriage returns
+      .replace(/\t/g, '\\t'); // Escape tabs
+    
+    // Try multiple JSON extraction methods
+    const jsonPatterns = [
+      /\{[\s\S]*\}/, // Standard JSON object
+      /```json\s*(\{[\s\S]*?\})\s*```/, // JSON in code blocks
+      /```\s*(\{[\s\S]*?\})\s*```/, // JSON in generic code blocks
+    ];
+    
+    for (const pattern of jsonPatterns) {
+      const match = cleanedResponse.match(pattern);
+      if (match) {
+        try {
+          const jsonStr = match[1] || match[0]; // Use group 1 if available, otherwise full match
+          const parsed = JSON.parse(jsonStr);
+          
+          // Validate that we have the expected structure
+          if (typeof parsed === 'object' && parsed !== null) {
+            return {
+              accuracy: Math.min(100, Math.max(0, parsed.accuracy || 0)),
+              completeness: Math.min(100, Math.max(0, parsed.completeness || 0)),
+              methodology: Math.min(100, Math.max(0, parsed.methodology || 0)),
+              communication: Math.min(100, Math.max(0, parsed.communication || 0)),
+              overall: Math.min(100, Math.max(0, parsed.overall || 0)),
+              feedback: parsed.feedback || 'No feedback provided',
+              suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : []
+            };
+          }
+        } catch (parseError) {
+          console.error('Failed to parse JSON with pattern:', pattern, parseError);
+          continue; // Try next pattern
+        }
+      }
     }
+    
+    // If no JSON found, log the response for debugging
+    console.log('No valid JSON found in response:', response);
+    
   } catch (error) {
     console.error('Failed to parse AI response:', error);
   }
