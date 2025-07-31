@@ -128,31 +128,36 @@ export function CodeEditor({ file, onChange }: CodeEditorProps) {
       </div>
 
       {/* Editor Content */}
-      <div className="flex-1 relative">
-        <textarea
-          value={content}
-          onChange={(e) => handleContentChange(e.target.value)}
-          readOnly={!file.editable}
-          className={`w-full h-full p-4 font-mono text-sm resize-none border-0 focus:outline-none focus:ring-0 ${
-            file.editable 
-              ? 'bg-white text-gray-900' 
-              : 'bg-gray-50 text-gray-700 cursor-not-allowed'
-          }`}
-          style={{
-            tabSize: 2,
-            lineHeight: '1.5'
-          }}
-          spellCheck={false}
-          placeholder={file.editable ? 'Start typing your code here...' : ''}
-        />
+      <div className="flex-1 flex bg-white">
+        {/* Line Numbers */}
+        <div className="w-16 bg-gray-50 border-r border-gray-200 flex flex-col select-none">
+          <div className="p-4 pt-4 pb-4 font-mono text-xs text-gray-400 text-right">
+            {content.split('\n').map((_, index) => (
+              <div key={`line-${index}`} className="h-[1.5em] leading-[1.5em]">
+                {index + 1}
+              </div>
+            ))}
+          </div>
+        </div>
         
-        {/* Line numbers overlay */}
-        <div className="absolute top-0 left-0 p-4 pointer-events-none select-none font-mono text-sm text-gray-400 whitespace-pre">
-          {content.split('\n').map((_, index) => (
-            <div key={index} className="h-[1.5em]">
-              {(index + 1).toString().padStart(3, ' ')}
-            </div>
-          ))}
+        {/* Code Editor */}
+        <div className="flex-1 relative">
+          <textarea
+            value={content}
+            onChange={(e) => handleContentChange(e.target.value)}
+            readOnly={!file.editable}
+            className={`w-full h-full p-4 pl-4 font-mono text-sm resize-none border-0 focus:outline-none focus:ring-0 ${
+              file.editable 
+                ? 'bg-white text-gray-900' 
+                : 'bg-gray-50 text-gray-700 cursor-not-allowed'
+            }`}
+            style={{
+              tabSize: 2,
+              lineHeight: '1.5'
+            }}
+            spellCheck={false}
+            placeholder={file.editable ? 'Start typing your code here...' : ''}
+          />
         </div>
       </div>
 

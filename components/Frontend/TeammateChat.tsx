@@ -8,12 +8,14 @@ import { ChatMessage, FrontendTask, CodeFile } from '@/types';
 interface TeammateChatProps {
   currentTask: FrontendTask | null;
   codeFiles: CodeFile[];
+  messages: ChatMessage[];
+  onMessagesChange: (messages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
 }
 
-export function TeammateChat({ currentTask, codeFiles }: TeammateChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export function TeammateChat({ currentTask, codeFiles, messages, onMessagesChange }: TeammateChatProps) {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -24,32 +26,34 @@ export function TeammateChat({ currentTask, codeFiles }: TeammateChatProps) {
     scrollToBottom();
   }, [messages]);
 
-  // Initialize with helpful teammate message
+  // Initialize with helpful teammate message (only once)
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && !hasInitialized) {
+      setHasInitialized(true);
+      
       const welcomeMessage: ChatMessage = {
-        id: '1',
+        id: `welcome-${Date.now()}`,
         role: 'teammate',
         content: "Hey! I'm Alex, one of the senior frontend engineers here. I saw Sarah assigned you a new task. Feel free to ask me anything about our codebase, design system, or if you need help with implementation details. I'm here to help! 🚀",
         timestamp: new Date(),
         type: 'text'
       };
-      setMessages([welcomeMessage]);
+      onMessagesChange([welcomeMessage]);
     }
-  }, [messages.length]);
+  }, [messages.length, hasInitialized, onMessagesChange]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       role: 'user',
       content: inputValue,
       timestamp: new Date(),
       type: 'text'
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    onMessagesChange(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
 
@@ -60,25 +64,25 @@ export function TeammateChat({ currentTask, codeFiles }: TeammateChatProps) {
       setTimeout(() => {
         setIsTyping(false);
         const teammateMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
+          id: `teammate-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           role: 'teammate',
           content: response,
           timestamp: new Date(),
           type: 'text'
         };
-        setMessages(prev => [...prev, teammateMessage]);
+        onMessagesChange(prev => [...prev, teammateMessage]);
       }, 1200);
     } catch (error) {
       setTimeout(() => {
         setIsTyping(false);
         const fallbackMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
+          id: `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           role: 'teammate',
           content: "Good question! For something like that, I'd suggest checking our component library first. We usually have utility functions in the `utils/` folder that might help. Feel free to ask if you need more specific guidance!",
           timestamp: new Date(),
           type: 'text'
         };
-        setMessages(prev => [...prev, fallbackMessage]);
+        onMessagesChange(prev => [...prev, fallbackMessage]);
       }, 1200);
     }
   };
@@ -180,7 +184,7 @@ export function TeammateChat({ currentTask, codeFiles }: TeammateChatProps) {
           <div className="grid grid-cols-1 gap-2">
             {suggestedQuestions.map((question, index) => (
               <button
-                key={index}
+                key={`suggested-${index}-${question.substring(0, 20)}`}
                 onClick={() => handleSuggestedQuestion(question)}
                 className="text-left text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded transition-colors"
               >
@@ -225,91 +229,35 @@ async function getTeammateResponse(
   codeFiles: CodeFile[],
   conversationHistory: ChatMessage[]
 ): Promise<string> {
-  // Simulate helpful teammate responses
-  const lowerMessage = userMessage.toLowerCase();
-  
-  const responses = [
-    // Questions about design system
-    {
-      keywords: ['design', 'system', 'style', 'css', 'tokens'],
-      responses: [
-        "Yeah! We have design tokens in `src/styles/tokens.js` with all our colors, spacing, and typography. Super helpful for consistency! 🎨",
-        "Our design system is pretty solid. Check out the tokens file - it has everything you need. Sarah from design did a great job setting it up.",
-        "For styling, we use the design tokens and try to keep things consistent. The colors and spacing are all defined there. Need help with anything specific?",
-        "The design tokens are your friend! All the spacing, colors, and typography values are in there. Makes everything look cohesive 👍"
-      ]
-    },
-    // Questions about hooks and utilities
-    {
-      keywords: ['hook', 'useinput', 'form', 'state', 'utility', 'util'],
-      responses: [
-        "Oh definitely! The `useInput` hook in `utils/hooks.js` is perfect for form state. It handles value, errors, and validation really nicely.",
-        "We have some great utilities! The `useInput` hook is super handy for forms - handles all the state management for you. Check it out! 🪝",
-        "For form stuff, definitely use the `useInput` hook. It's in `utils/hooks.js` and saves you a ton of boilerplate. Really clean API too.",
-        "The `useInput` hook is a lifesaver for forms! Alex (the previous Alex, not me 😄) built it and it's really well designed."
-      ]
-    },
-    // Questions about validation
-    {
-      keywords: ['valid', 'validate', 'email', 'password', 'error'],
-      responses: [
-        "For validation, we have `validateEmail` and `validatePassword` functions in `utils/validators.js`. They're pretty straightforward to use!",
-        "The validation functions are in the validators file. `validateEmail` uses a solid regex pattern that catches most edge cases. 📧",
-        "We've got email and password validation utilities already set up. They're in `utils/validators.js` - just import and use them!",
-        "The validation functions work great! `validateEmail` is particularly good - handles all the weird email edge cases you don't want to think about."
-      ]
-    },
-    // Questions about React patterns
-    {
-      keywords: ['react', 'component', 'pattern', 'prop', 'typescript'],
-      responses: [
-        "We generally follow pretty standard React patterns here. TypeScript interfaces for props, functional components, and hooks for state. Keep it simple! ⚛️",
-        "For React patterns, we like to keep components small and focused. One responsibility per component usually works well.",
-        "TypeScript is your friend! Define good interfaces for your props and the rest usually falls into place. IntelliSense will love you.",
-        "We're pretty conventional with our React patterns. Functional components, custom hooks for logic, and good prop interfaces. Nothing too fancy!"
-      ]
-    },
-    // Questions about accessibility
-    {
-      keywords: ['accessibility', 'a11y', 'aria', 'screen reader'],
-      responses: [
-        "Great question! We take accessibility seriously here. Make sure to use semantic HTML, proper labels, and ARIA attributes where needed. 🌟",
-        "For a11y, focus on semantic HTML first - that gets you like 80% of the way there. Then add ARIA labels for anything that needs extra context.",
-        "Accessibility is super important! Use proper form labels, make sure everything is keyboard navigable, and test with a screen reader if you can.",
-        "Love that you're thinking about accessibility! The basics: semantic HTML, proper labels, good color contrast, and keyboard navigation. You've got this! 💪"
-      ]
-    },
-    // Questions about best practices
-    {
-      keywords: ['best', 'practice', 'convention', 'standard', 'clean'],
-      responses: [
-        "Our main conventions: keep components small, use TypeScript interfaces, extract custom hooks for reusable logic, and test the happy path at least! 📝",
-        "Best practices here are pretty standard: good naming, small functions, proper TypeScript types, and don't over-engineer. Simple is good!",
-        "We like clean, readable code over clever code. If someone else can't understand it in 6 months, it's probably too complex. Keep it simple! 🧹",
-        "Main thing is consistency. Use the patterns you see in the existing codebase, follow the linting rules, and you'll be fine!"
-      ]
-    }
-  ];
+  try {
+    const response = await fetch('/api/chat/teammate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: userMessage,
+        currentTask,
+        codeFiles,
+        conversationHistory
+      })
+    });
 
-  // Find matching response category
-  for (const category of responses) {
-    if (category.keywords.some(keyword => lowerMessage.includes(keyword))) {
-      const randomResponse = category.responses[Math.floor(Math.random() * category.responses.length)];
-      return randomResponse;
+    if (!response.ok) {
+      throw new Error('Failed to get teammate response');
     }
+    
+    const data = await response.json();
+    return data.response;
+  } catch (error) {
+    console.error('Teammate chat error:', error);
+    
+    // Fallback to encouraging responses if API fails
+    const fallbackResponses = [
+      "That's a really good question! I'd probably approach it the same way you're thinking. Trust your instincts! 🤔",
+      "Good instincts! I'd probably go with whatever feels most maintainable. Future you will thank you for keeping it simple.",
+      "Love the attention to detail! That kind of thinking makes for really solid code. What's your gut feeling on it?",
+      "Nice catch! Those are exactly the kinds of details that separate good code from great code. 🌟"
+    ];
+    
+    return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
   }
-
-  // Default encouraging responses
-  const defaultResponses = [
-    "That's a really good question! I'd probably approach it the same way you're thinking. Trust your instincts! 🤔",
-    "Hmm, interesting challenge! What have you tried so far? Sometimes talking through it helps.",
-    "I've run into similar issues before. Usually the simplest solution ends up being the right one. What are you thinking?",
-    "That's exactly the kind of thing I would ask about too! Shows you're thinking about it the right way. 👍",
-    "Good instincts! I'd probably go with whatever feels most maintainable. Future you will thank you for keeping it simple.",
-    "Love the attention to detail! That kind of thinking makes for really solid code. What's your gut feeling on it?",
-    "That's a great point I hadn't considered! How are you leaning towards solving it?",
-    "Nice catch! Those are exactly the kinds of details that separate good code from great code. 🌟"
-  ];
-
-  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 }

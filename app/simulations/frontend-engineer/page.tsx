@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   MessageSquare, 
   Users, 
@@ -21,7 +21,7 @@ import { CodeEditor } from '@/components/Frontend/CodeEditor';
 import { FileExplorer } from '@/components/Frontend/FileExplorer';
 import { SubmissionModal } from '@/components/Frontend/SubmissionModal';
 import { EvaluationResults } from '@/components/EvaluationResults';
-import { FrontendTask, CodeFile } from '@/types';
+import { FrontendTask, CodeFile, ChatMessage } from '@/types';
 import { EvaluationCriteria } from '@/lib/ai-evaluation';
 import { frontendTasks } from '@/data/frontendTasks';
 // Removed SimulationAccessGuard - this is now a purely frontend simulation
@@ -38,6 +38,10 @@ export default function FrontendEngineerSimulation() {
   const [evaluation, setEvaluation] = useState<EvaluationCriteria | null>(null);
   const [simulationStarted, setSimulationStarted] = useState(false);
   const [progress, setProgress] = useState(0);
+  
+  // Persistent chat history
+  const [managerMessages, setManagerMessages] = useState<ChatMessage[]>([]);
+  const [teammateMessages, setTeammateMessages] = useState<ChatMessage[]>([]);
 
   // Initialize simulation with first task
   useEffect(() => {
@@ -136,11 +140,11 @@ export default function FrontendEngineerSimulation() {
     }
   };
 
-  const tabs = [
+  const tabs = useMemo(() => [
     { id: 'manager' as TabType, label: 'Manager Chat', icon: MessageSquare, badge: currentTask ? '1' : null },
     { id: 'teammate' as TabType, label: 'Teammate Chat', icon: Users, badge: null },
     { id: 'code' as TabType, label: 'Code Editor', icon: Code, badge: null }
-  ];
+  ], [currentTask]);
 
   if (evaluation) {
     return (
@@ -291,6 +295,8 @@ export default function FrontendEngineerSimulation() {
                 <ManagerChat 
                   currentTask={currentTask}
                   onTaskUpdate={handleTaskUpdate}
+                  messages={managerMessages}
+                  onMessagesChange={setManagerMessages}
                 />
               )}
 
@@ -298,6 +304,8 @@ export default function FrontendEngineerSimulation() {
                 <TeammateChat 
                   currentTask={currentTask}
                   codeFiles={codeFiles}
+                  messages={teammateMessages}
+                  onMessagesChange={setTeammateMessages}
                 />
               )}
 

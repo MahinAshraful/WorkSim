@@ -10,12 +10,14 @@ import { frontendTasks } from '@/data/frontendTasks';
 interface ManagerChatProps {
   currentTask: FrontendTask | null;
   onTaskUpdate: (task: FrontendTask) => void;
+  messages: ChatMessage[];
+  onMessagesChange: (messages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
 }
 
-export function ManagerChat({ currentTask, onTaskUpdate }: ManagerChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export function ManagerChat({ currentTask, onTaskUpdate, messages, onMessagesChange }: ManagerChatProps) {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -26,18 +28,20 @@ export function ManagerChat({ currentTask, onTaskUpdate }: ManagerChatProps) {
     scrollToBottom();
   }, [messages]);
 
-  // Initialize with welcome message and first task
+  // Initialize with welcome message and first task (only once)
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && !hasInitialized) {
+      setHasInitialized(true);
+      
       const welcomeMessage: ChatMessage = {
-        id: '1',
+        id: `welcome-${Date.now()}`,
         role: 'manager',
         content: "Hey there! Welcome to the team. I'm Sarah, your engineering manager. I have a task for you today that I think would be perfect for your skill level.",
         timestamp: new Date(),
         type: 'text'
       };
 
-      setMessages([welcomeMessage]);
+      onMessagesChange([welcomeMessage]);
 
       // Simulate manager typing and then sending the first task
       setTimeout(() => {
@@ -46,32 +50,32 @@ export function ManagerChat({ currentTask, onTaskUpdate }: ManagerChatProps) {
           setIsTyping(false);
           const firstTask = frontendTasks[0];
           const taskMessage: ChatMessage = {
-            id: '2',
+            id: `task-${Date.now()}`,
             role: 'manager',
             content: firstTask.managerPrompt,
             timestamp: new Date(),
             type: 'text',
             metadata: { taskId: firstTask.id }
           };
-          setMessages(prev => [...prev, taskMessage]);
+          onMessagesChange(prev => [...prev, taskMessage]);
           onTaskUpdate(firstTask);
         }, 2000);
       }, 1000);
     }
-  }, [messages.length, onTaskUpdate]);
+  }, [messages.length, onTaskUpdate, hasInitialized, onMessagesChange]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       role: 'user',
       content: inputValue,
       timestamp: new Date(),
       type: 'text'
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    onMessagesChange(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
 
@@ -82,25 +86,25 @@ export function ManagerChat({ currentTask, onTaskUpdate }: ManagerChatProps) {
       setTimeout(() => {
         setIsTyping(false);
         const managerMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
+          id: `manager-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           role: 'manager',
           content: response,
           timestamp: new Date(),
           type: 'text'
         };
-        setMessages(prev => [...prev, managerMessage]);
+        onMessagesChange(prev => [...prev, managerMessage]);
       }, 1500);
     } catch (error) {
       setTimeout(() => {
         setIsTyping(false);
         const fallbackMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
+          id: `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           role: 'manager',
           content: "That's a great question! Feel free to use your best judgment on the implementation. If you need clarification on requirements, just let me know.",
           timestamp: new Date(),
           type: 'text'
         };
-        setMessages(prev => [...prev, fallbackMessage]);
+        onMessagesChange(prev => [...prev, fallbackMessage]);
       }, 1500);
     }
   };
@@ -192,7 +196,7 @@ export function ManagerChat({ currentTask, onTaskUpdate }: ManagerChatProps) {
             <p className="text-sm text-gray-600">{currentTask.title}</p>
             <div className="flex gap-2 mt-2">
               {currentTask.acceptanceCriteria.slice(0, 2).map((criteria, index) => (
-                <span key={index} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                <span key={`criteria-${index}-${criteria.substring(0, 15)}`} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
                   {criteria}
                 </span>
               ))}
@@ -239,78 +243,34 @@ async function getManagerResponse(
   currentTask: FrontendTask | null, 
   conversationHistory: ChatMessage[]
 ): Promise<string> {
-  // Simulate manager responses based on common questions
-  const lowerMessage = userMessage.toLowerCase();
-  
-  const responses = [
-    // Questions about requirements
-    {
-      keywords: ['requirement', 'spec', 'what', 'how', 'clarify', 'clarification'],
-      responses: [
-        "Good question! For this task, I'd say focus on the core functionality first. We can always iterate on the design later.",
-        "The main thing is making sure it works well on both desktop and mobile. Users access our app from everywhere!",
-        "I intentionally kept some details flexible - use your best judgment. That's why we hired you!",
-        "Check with Alex if you need specifics about our component patterns. They know our codebase really well."
-      ]
-    },
-    // Questions about timeline
-    {
-      keywords: ['time', 'deadline', 'when', 'timeline', 'priority'],
-      responses: [
-        "No huge rush, but it would be great to have this done by end of week. Take your time to do it right.",
-        "This is medium priority. Focus on getting it working correctly rather than rushing.",
-        "The product team is asking about this, but I told them quality over speed. Do it right!"
-      ]
-    },
-    // Questions about design/UX
-    {
-      keywords: ['design', 'ui', 'ux', 'look', 'style', 'color', 'font'],
-      responses: [
-        "We have design tokens in the styles folder - use those for consistency. Sarah in design put a lot of work into those!",
-        "Keep it simple and clean. Our users prefer functionality over fancy animations.",
-        "Make sure it's accessible! We take that seriously here. Check the WCAG guidelines if you need to.",
-        "Alex can help you with the design system if you get stuck. They're great with that stuff."
-      ]
-    },
-    // Questions about testing
-    {
-      keywords: ['test', 'testing', 'qa', 'bug'],
-      responses: [
-        "Write some basic tests if you have time, but don't stress about 100% coverage for this first version.",
-        "The QA team will do a full pass later, but make sure it works in Chrome and Safari at least.",
-        "Good thinking about edge cases! That's exactly the kind of thing that separates junior from senior engineers."
-      ]
-    },
-    // General encouragement
-    {
-      keywords: ['help', 'stuck', 'difficult', 'hard', 'problem'],
-      responses: [
-        "You've got this! Don't hesitate to ask Alex or me if you need help. We're all here to support each other.",
-        "Totally normal to feel overwhelmed on new tasks. Break it down into smaller pieces - that usually helps.",
-        "Remember, perfect is the enemy of good. Get something working first, then we can polish it.",
-        "That's a common challenge! Most of us have been there. The team is really helpful - just ask around."
-      ]
-    }
-  ];
+  try {
+    const response = await fetch('/api/chat/manager', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: userMessage,
+        currentTask,
+        conversationHistory
+      })
+    });
 
-  // Find matching response category
-  for (const category of responses) {
-    if (category.keywords.some(keyword => lowerMessage.includes(keyword))) {
-      const randomResponse = category.responses[Math.floor(Math.random() * category.responses.length)];
-      return randomResponse;
+    if (!response.ok) {
+      throw new Error('Failed to get manager response');
     }
+    
+    const data = await response.json();
+    return data.response;
+  } catch (error) {
+    console.error('Manager chat error:', error);
+    
+    // Fallback to a realistic response if API fails
+    const fallbackResponses = [
+      "That's a great question! Use your best judgment on that - I trust your technical expertise.",
+      "Good point! Go with whatever approach feels most maintainable to you.",
+      "Feel free to make that call - you're the technical expert here. I trust your judgment.",
+      "That's exactly the kind of detail-oriented thinking we need. Nice catch!"
+    ];
+    
+    return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
   }
-
-  // Default responses for anything else
-  const defaultResponses = [
-    "That's a great question! Use your best judgment on that - I trust your technical expertise.",
-    "Hmm, I hadn't thought about that angle. What do you think would work best?",
-    "Good point! Go with whatever approach feels most maintainable to you.",
-    "I'm curious what you're thinking. Any ideas on how to approach it?",
-    "That's exactly the kind of detail-oriented thinking we need. Nice catch!",
-    "Feel free to make that call - you're the technical expert here. I trust your judgment.",
-    "Interesting! What are you leaning towards? I'd love to hear your thoughts."
-  ];
-
-  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 }

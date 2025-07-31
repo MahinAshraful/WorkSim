@@ -7,7 +7,10 @@ import {
   FileText, 
   FolderOpen, 
   Folder,
-  Settings
+  Settings,
+  FileCode,
+  FileType,
+  Palette
 } from 'lucide-react';
 import { CodeFile } from '@/types';
 
@@ -108,18 +111,18 @@ export function FileExplorer({ files, activeFile, onFileSelect }: FileExplorerPr
     switch (extension) {
       case 'tsx':
       case 'jsx':
-        return '⚛️';
+        return <FileCode className="h-4 w-4 text-blue-500" />;
       case 'ts':
       case 'js':
-        return '📄';
+        return <FileType className="h-4 w-4 text-yellow-500" />;
       case 'css':
-        return '🎨';
+        return <Palette className="h-4 w-4 text-purple-500" />;
       case 'html':
-        return '🌐';
+        return <FileText className="h-4 w-4 text-orange-500" />;
       case 'json':
-        return '⚙️';
+        return <Settings className="h-4 w-4 text-gray-500" />;
       default:
-        return '📄';
+        return <FileText className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -131,10 +134,10 @@ export function FileExplorer({ files, activeFile, onFileSelect }: FileExplorerPr
     return (
       <div key={node.path}>
         <div
-          className={`flex items-center gap-1 px-2 py-1 text-sm cursor-pointer hover:bg-gray-100 ${
+          className={`flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 transition-colors ${
             isActive ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-500' : 'text-gray-700'
           }`}
-          style={{ paddingLeft: `${8 + depth * 16}px` }}
+          style={{ paddingLeft: `${12 + depth * 20}px` }}
           onClick={() => {
             if (node.type === 'folder') {
               toggleFolder(node.path);
@@ -160,16 +163,16 @@ export function FileExplorer({ files, activeFile, onFileSelect }: FileExplorerPr
           
           {node.type === 'file' && (
             <>
-              <span className="w-4 text-center">{getFileIcon(node.name)}</span>
+              {getFileIcon(node.name)}
             </>
           )}
           
-          <span className={`flex-1 ${!isEditable && node.type === 'file' ? 'text-gray-500' : ''}`}>
+          <span className={`flex-1 truncate ${!isEditable && node.type === 'file' ? 'text-gray-500' : ''}`}>
             {node.name}
           </span>
           
           {node.type === 'file' && !isEditable && (
-            <span className="text-xs text-gray-400">readonly</span>
+            <span className="text-xs text-gray-400 ml-2 flex-shrink-0">readonly</span>
           )}
         </div>
         
@@ -194,16 +197,16 @@ export function FileExplorer({ files, activeFile, onFileSelect }: FileExplorerPr
   return (
     <div className="h-full flex flex-col bg-gray-50">
       {/* Header */}
-      <div className="border-b border-gray-200 p-3">
+      <div className="border-b border-gray-200 p-3 bg-white">
         <h3 className="font-medium text-gray-900 text-sm flex items-center gap-2">
-          <Settings className="h-4 w-4" />
+          <Settings className="h-4 w-4 text-gray-600" />
           File Explorer
         </h3>
       </div>
 
       {/* File Tree */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-2">
+      <div className="flex-1 overflow-y-auto bg-white">
+        <div className="py-1">
           {fileTree
             .sort((a, b) => {
               // Folders first, then files
@@ -218,7 +221,7 @@ export function FileExplorer({ files, activeFile, onFileSelect }: FileExplorerPr
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 p-2 text-xs text-gray-500">
+      <div className="border-t border-gray-200 p-2 text-xs text-gray-500 bg-white">
         <div className="flex items-center justify-between">
           <span>{files.length} files</span>
           <span>{files.filter(f => f.editable).length} editable</span>

@@ -59,7 +59,7 @@ export function SubmissionModal({
               <h4 className="text-sm font-medium text-gray-900">Acceptance Criteria:</h4>
               <ul className="text-sm text-gray-600 space-y-1">
                 {task.acceptanceCriteria.map((criteria, index) => (
-                  <li key={index} className="flex items-start gap-2">
+                  <li key={`criteria-${index}-${criteria.substring(0, 15)}`} className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
                     {criteria}
                   </li>
